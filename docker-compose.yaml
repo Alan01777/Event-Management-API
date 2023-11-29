@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  db:
+    image: mariadb:10.8.3
+    container_name: "mariadb"
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    ports:
+        - 3306:3306
+    volumes:
+        - ./.docker/db:/var/lib/mysql
+    networks:
+        - event-network
+
+  app:
+    image: alan01777/php8.1:latest
+    container_name: app
+    restart: always
+    working_dir: /var/www/html/app
+    volumes:
+      - .:/var/www/html/app
+    depends_on:
+      - db
+    networks:
+      - event-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: always
+    working_dir: /var/www/html/app
+    volumes:
+      - ./.docker/nginx/conf:/etc/nginx/conf.d
+      - ./.docker/nginx/log:/var/log/nginx
+      - .:/var/www/html/app
+    ports:
+      - 80:80
+    depends_on:
+      - app
+    networks:
+      - event-network
+
+
+networks:
+  event-network:
+    driver: bridge
