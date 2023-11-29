@@ -29,6 +29,7 @@ class EventController extends Controller
         return EventResource::collection($query->latest()->paginate());
     }
 
+
     public function store(Event $event, EventRequest $request)
     {
         $data = $request->validated();
