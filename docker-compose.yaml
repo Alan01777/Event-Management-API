@@ -31,12 +31,11 @@ services:
       - event-network
 
   nginx:
-    image: nginx:alpine
+    image: alan01777/nginx-laravel:0.1
     container_name: nginx
     restart: always
     working_dir: /var/www/html/app
     volumes:
-      - ./.docker/nginx/conf:/etc/nginx/conf.d
       - ./.docker/nginx/log:/var/log/nginx
       - .:/var/www/html/app
     ports:
